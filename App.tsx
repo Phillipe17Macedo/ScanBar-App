@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
 // Componente
 import { Overlay } from "./components/Overlay";
+import { LoadingModal } from "./components/Modal/LoadingModal";
 
 //styles
 import { styles } from "./styles/styles";
 import { Ionicons } from "@expo/vector-icons";
+
+// method from API
+import { cadastrarCodigoBarra } from "./utils/cadastrarCodigoBarra";
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [flashActive, setFlashActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -24,11 +29,39 @@ export default function App() {
     getCameraPermissions();
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }: any) => {
-    // Tipagem explícita
+  const handleBarcodeScanned = async ({ type, data }: any) => {
     setScanned(true);
-    alert(`Código escaneado com tipo ${type} e dados: ${data}`);
+    setLoading(true);
+
+    const codigoBarra = {
+      tipo: String(type),
+      codigo: data,
+      dataLeitura: new Date().toISOString(),
+    };
+
+    try {
+      const response = await cadastrarCodigoBarra(codigoBarra);
+      setLoading(false);
+      if (response) {
+        Alert.alert("Sucesso", "Código de barras cadastrado com sucesso!");
+      } else {
+        Alert.alert("Erro", "Falha ao cadastrar o código de barras.");
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert(
+        "Erro",
+        "Ocorreu um erro ao tentar cadastrar o código de barras."
+      );
+      console.error("Erro ao cadastrar código de barras:", error);
+    }
   };
+
+  // const handleBarcodeScanned = ({ type, data }: any) => {
+  //   // Tipagem explícita
+  //   setScanned(true);
+  //   alert(`Código escaneado com tipo ${type} e dados: ${data}`);
+  // };
 
   if (hasPermission === null) {
     return (
@@ -109,6 +142,10 @@ export default function App() {
           />
         </TouchableOpacity>
       )}
+      <LoadingModal
+        visible={loading}
+        message="Cadastrando código de barras..."
+      />
     </View>
   );
 }
