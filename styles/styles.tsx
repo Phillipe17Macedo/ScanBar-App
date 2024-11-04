@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   overlayText: {
     position: "absolute",
-    top: "58%",
+    top: "62%",
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "500",
