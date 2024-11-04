@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { CameraView, Camera } from "expo-camera";
+import { Overlay } from "./Overlay"; // Importando o componente Overlay
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null); // Correção de tipagem
   const [scanned, setScanned] = useState(false);
-  const [cameraActive, setCameraActive] = useState(true);
+  const [cameraActive, setCameraActive] = useState(false);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
+      setHasPermission(status === "granted"); // Tipagem correta agora
     };
 
     getCameraPermissions();
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }) => {
+  const handleBarcodeScanned = ({ type, data }: any) => {
+    // Tipagem explícita
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    alert(`Código escaneado com tipo ${type} e dados: ${data}`);
   };
 
   if (hasPermission === null) {
     return (
       <Text style={styles.permissionText}>
-        Requesting for camera permission
+        Aguardando permissão para acessar a Câmera
       </Text>
     );
   }
   if (hasPermission === false) {
-    return <Text style={styles.permissionText}>No access to camera</Text>;
+    return (
+      <Text style={styles.permissionText}>
+        Sem permissão para acessar a Câmera
+      </Text>
+    );
   }
 
   return (
@@ -54,31 +60,33 @@ export default function App() {
         />
       )}
 
-      {/* Overlay with scan area highlight */}
-      <View style={styles.overlay}>
-        <View style={styles.scanArea}>
-          <View style={styles.clearArea} />
-        </View>
-        <Text style={styles.overlayText}>
-          Align the barcode within the frame
-        </Text>
-      </View>
+      {/* Overlay com área de escaneamento transparente */}
+      <Overlay />
+
+      <Text style={styles.overlayText}>
+        Alinhe o código de barras ao centro da tela
+      </Text>
 
       {scanned && (
         <TouchableOpacity
-          style={styles.button}
+          style={styles.scanButton}
           onPress={() => setScanned(false)}
         >
-          <Text style={styles.buttonText}>Tap to Scan Again</Text>
+          <Text style={styles.scanButtonText}>
+            Clique para escanear novamente
+          </Text>
         </TouchableOpacity>
       )}
 
       <TouchableOpacity
-        style={[styles.button, styles.toggleButton]}
+        style={[
+          styles.cameraToggleButton,
+          cameraActive ? styles.cameraCloseButton : styles.cameraOpenButton,
+        ]}
         onPress={() => setCameraActive(!cameraActive)}
       >
-        <Text style={styles.buttonText}>
-          {cameraActive ? "Close Camera" : "Open Camera"}
+        <Text style={styles.cameraToggleButtonText}>
+          {cameraActive ? "Fechar Câmera" : "Abrir Câmera"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -88,6 +96,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#1A1A1A",
   },
   permissionText: {
     flex: 1,
@@ -95,54 +104,66 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     fontSize: 18,
     color: "#fff",
-    backgroundColor: "rgba(0,0,0,0.7)",
-  },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay background
-  },
-  scanArea: {
-    width: "80%",
-    height: "30%",
-    borderColor: "#0E7AFE",
-    borderWidth: 2,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clearArea: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "transparent", // Lighter background inside scan area
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 20,
   },
   overlayText: {
-    color: "#fff",
+    position: "absolute",
+    top: "58%",
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
     textAlign: "center",
-    marginTop: 10,
+    alignSelf: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    opacity: 0.8,
   },
-  button: {
+  scanButton: {
+    position: "absolute",
+    bottom: 90,
+    alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    backgroundColor: "#0E7AFE",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  scanButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  cameraToggleButton: {
     position: "absolute",
     bottom: 40,
     alignSelf: "center",
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#0E7AFE",
+    paddingHorizontal: 25,
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  buttonText: {
+  cameraOpenButton: {
+    backgroundColor: "#28a745",
+  },
+  cameraCloseButton: {
+    backgroundColor: "#dc3545",
+  },
+  cameraToggleButtonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
-  },
-  toggleButton: {
-    bottom: 100, // Positioned above the scan again button
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
