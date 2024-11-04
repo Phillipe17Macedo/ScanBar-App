@@ -7,11 +7,13 @@ import { Overlay } from "./components/Overlay";
 
 //styles
 import { styles } from "./styles/styles";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
+  const [flashActive, setFlashActive] = useState(false);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -61,6 +63,7 @@ export default function App() {
               "itf14",
             ],
           }}
+          enableTorch={flashActive}
           style={StyleSheet.absoluteFillObject}
         />
       )}
@@ -93,6 +96,19 @@ export default function App() {
           {cameraActive ? "Fechar Câmera" : "Abrir Câmera"}
         </Text>
       </TouchableOpacity>
+
+      {cameraActive && (
+        <TouchableOpacity
+          style={styles.flashButton}
+          onPress={() => setFlashActive(!flashActive)}
+        >
+          <Ionicons
+            name={flashActive ? "flash" : "flash-off"}
+            size={30}
+            color="#fff"
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

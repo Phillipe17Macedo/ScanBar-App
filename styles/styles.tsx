@@ -73,4 +73,12 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
+  flashButton: {
+    position: "absolute",
+    top: 50,
+    right: 30,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 30,
+    padding: 10,
+  },
 });
