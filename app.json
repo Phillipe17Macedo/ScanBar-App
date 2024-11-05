@@ -4,10 +4,10 @@
     "slug": "ScanBar-Rotary",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-rotary.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/rotary-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,7 +16,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon-rotary.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -26,7 +26,7 @@
       "package": "com.phillipe17macedo.ScanBarRotary"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon-rotary.png"
     },
     "plugins": [
       "expo-router",
